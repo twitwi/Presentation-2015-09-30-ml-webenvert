@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+            
+        <title>Machine Learning  What, how, why?</title>
+
+        <meta name="author" content="Rémi Emonet (@remiemonet)">
+        <meta name="venue" content="Web En Vert">
+        <meta name="date" content="2015-09-30">
+        <meta name="twitter" content="@remiemonet">
+        <meta name="github" content="@twitwi">
+
+        <style type="text/css">
+
+.title-slide h1 {color: lime;}
+
+.minion>.slide {
+   background-image: linear-gradient(to bottom right, rgba(255,255,255, .6),  rgba(255, 255, 255, .4)), url('media/minion-question.jpg');
+   background-size: fit, fit;
+   color: black !important;
+}
+.minion>.slide>p {font-size: 62% !important;}
+.minion>.slide h2 {margin-bottom: 350px;}
+.minion>.slide p {margin-left: 1em;}
+.minion a, .minion a code {color: #F55 !important; font-weight: bold;}
+.minion .links+ul>li {font-size: 50% !important; color: black !important;}
+
+.pack {font-size: 65% !important;}
+
+blockquote {font-size: 18px !important; color: white !important;}
+blockquote p {margin-bottom: .7em !important;}
+blockquote cite {float: right; font-size: 150% !important;}
+.noimgmargin img {margin: 0 !important;}
+.latex {color: #F55;}
+.bigeq {font-size: 75%;}
+.comment {background: white !important; height: auto !important;}
+img {margin-bottom: 0 !important; box-sizing: border-box;}
+
+em {color: #F55;}
+.bordered {border: 1px solid #F55; }
+
+.custommap>div {height: 400px; float: left;}
+
+.allpadded img {padding: 15px; }
+.blurred {filter: blur(5px)}
+.fromblurred {
+    animation-duration: 5000ms;
+    animation-name: unblur;
+}
+@keyframes unblur {
+    0% {
+        filter: blur(5px);
+    }
+    to {
+        filter: blur(0px);
+    }
+}
+
+.no-h h2, .no-h h1 {display: none;}
+
+.blink {
+    animation-duration: 1300ms;
+    animation-name: blink;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+    animation-timing-function: ease-in-out;
+}
+@keyframes blink {
+    0% {
+        color: #0F0;/*#F0F;*/
+    }
+    50% {
+        color: yellow;
+text-shadow: 0 0 20px white;
+filter: blur(0px);
+    }
+    100% {
+        color: red;
+/*filter: blur(2px);*/
+    }
+}
+
+            /* code highlighting height */
+            .auto .CodeMirror {height: auto !important;}
+            .dense {font-size: 66%;}
+
+            /* a few nicer slides */
+            .blackbg {background: black !important;}
+            .title-slide ul li { list-style: none; }
+            .title-slide ul {
+                font-size: 20px; color: darkgrey;
+                text-align: center;
+                position: absolute; bottom: 50px; left:0; right: 0;
+            }
+        </style>
+
+
+	<script src="deck-packed.js"></script>
+        <script>
+            var cssAndJs = ["codemirror", "dark-red-draft.css", "theme:"]; // include the theme (can add any css or js to the list)
+            var options = { PREFIX: '.', fitMarginY: 0 }; // to override default deck.js options
+            includedeck(cssAndJs, options);
+        </script>
+    </head>
+    <body class="NONONOhas-clones">
+        <div class="deck-container">
+
+            <!-- splash screen when loading -->
+            <div class="deck-loading-splash" style="background: black; color: chartreuse;">
+                <span class="vcenter" style="font-size: 30px; font-family: Arial; ">Please wait, while the deck is loading…</span>
+            </div>
+
+
+            <!-- --------------------------- -->
+            <!-- slides in extended markdown -->
+            <section class="smart">
+
+# <span class="var-title-br"></span> {*no-status title-slide} // comment
+- <span class="var-author"></span>
+- <span class="var-date"></span>
+- <span class="var-venue"></span>
+- today, convince {notes}
+  - machine learning is more and more everywhere
+  - ML is very important for companies
+  - data is very important
+
+## `$ whoami` {darkened bottom-left noimgmargin /no-status}
+
+<img class="c6 floatright" src="media/software-carpentry-banner.png" style="background: white; padding: 1em;"/>
+<img class="c6 floatleft" src="media/fr-to-saint-etienne.jpg" style="padding: 1em 3em;"/>
+<img class="c6 floatleft" src="media/lthe.jpg"/>
+<img class="c6 floatright" src="media/idiap-abstract.png" style="background: white; padding: .5em;"/>
+
+- {notes}
+  - chercheur en ML, mais avant en archi log
+  - geek: des projets à coté, dont deck.js et des isochrones
+  - enseignant + swc instructor
+
+## {/no-status no-h}
+- `$ whoami` {no}
+    - Software Engineer
+    - Researcher: machine learning, computer vision
+    - Teacher: web technologies, computing literacy
+    - Geek: deck.js slides, isochrones, …
+
+<blockquote>
+<p>
+You are shrewd, skeptical and restrained.
+<p>
+You are independent: you have a strong desire to have time to yourself. You are calm-seeking: you prefer activities that are quiet, calm, and safe. And you are philosophical: you are open to and intrigued by new ideas and love to explore them.
+<p>
+Experiences that give a sense of prestige hold some appeal to you.
+<p>
+You are relatively unconcerned with both tradition and taking pleasure in life. You care more about making your own path than following what others have done. And you prefer activities with a purpose greater than just personal enjoyment. 
+</p>
+<cite>IBM BlueMix (Watson)</cite>
+</blockquote>
+
+
+<!-- joke -->
+# What is Machine Learning?
+
+## Machine Learning Basic Principle
+- Given a dataset $\\{y_i, x_{i1}, \ldots, x_{ip}\\}_{i=1}^n $
+- Optimize the likelihood function <br/> $\mathcal{L} = \sum_d \sum_w \sum_{t_a} n(w,t_a,d) log \sum_z \sum_{t_s} p(w,t_r|z) p(z,t_s|d)$
+- Or using a sparse regularization <br/>  $\mathcal{L} - \lambda_{sparse} \sum_d \sum_z KL(U || p(ts|z, d))$ {slide}
+- By using a Gibbs Sampler <br/> <span class="bigeq">  $p(W_{ji},at_{ji} | o_{ji} = o, O^{-ji}) = \frac{N^{-ji}\_{obs}(W_{ji}, rt_{ji}, z_{ji}) + \eta(W_{ji},rt_{ji})}{\sum_{w',rt'}\left( N^{-ji}\_{obs}(w', rt', z_{ji}) + \eta(w',rt') \right)}{}$</span> {slide} // quit à faire ça, pourquoi pas utiliser le "blink"
+- @anim: %+class:blink: .latex
+- {notes}
+  - et pourquoi pas utiliser la balise blink d'html pendant qu'on y est
+
+
+
+
+<!-- examples -->
+# Machine Learning <br/>in the Wild // before we start, a quizz on ML
+
+
+## Which One of These Services <br/> Uses Machine Learning?
+<img class="c6 floatleft" src="media/logo-google.jpg"/>
+<img class="c6 floatleft" src="media/logo-facebook.png" style="padding: 20px 100px;"/>
+<img class="c6 floatleft" src="media/logo-netflix.png"/>
+<img class="c6 floatleft" src="media/logo-youtube.png" style="background: white"/>
+
+## Machine Learning in Future Tech? {allpadded}
+<img class="c6 floatleft" src="media/google-car.jpg"/>
+<img class="c6 floatleft" src="media/same-day-pup.jpg"/>
+<img class="c6 floatleft" src="media/prosthetic-arms.jpg"/>
+<img class="c6 floatleft" src="media/connected-healthcare.jpg"/>
+
+
+<!-- intrinsic motivation -->
+# What is Machine Learning? <br/> an example motivation
+
+## Challenge: Which Iris Species? {image-full bottom-left darkened /black-bg /no-status}
+<div class="img" style="background-image: url('media/iris.jpg')" data-attribution="https://www.flickr.com/photos/asa-moya/3722175717/sizes/l" data-attribution-content="CC by Asa-moya (Flickr)" data-scale=""></div>
+- {notes}
+  - you have to write a program or human procedure
+  - that receives a flower
+  - that should tell it's species among 3 possible ones (close ones)
+
+## Feature Extraction {custommap}
+<div class="c5" style="background-size: contain; background-image: url('media/iris.jpg'); background-position: center center; background-repeat:no-repeat"></div>
+<div class="c1" style="line-height: 400px; text-align: center;">&rArr;</div>
+<div class="c5" style="padding-top: 150px; font-size: 72%;"><pre>Sepal length: 5.1
+Sepal width: 2.5
+Petal length: 4.2
+Petal width: 1.0
+</pre>
+Expected Label: “Iris Setosa”</div>
+
+## Analysis and Program Writing {image-full bottom-left darkened /black-bg /no-status}
+<div class="img" style="background-image: url('media/iris-correlations.jpg')" ></div>
+- {notes}
+  - looking at feature
+  - starting to write the program
+  - using "if" etc
+
+## IFTTT... {image-full top-right darkened /black-bg /no-status}
+<div class="img" style="background-image: url('media/tree-sunset.jpg')" data-attribution="https://www.flickr.com/photos/porsupah/7030632775/sizes/o/" data-attribution-content="CC by -Porsupah- (Flickr)" data-scale=""></div>
+- {notes}
+  - a lot of if
+  - a simple case
+  - actually: more features, more classes, more intricated
+
+## Predictive Machine Learning
+- Instead of writing a program that solves a task,
+- We {slide}
+    1. collect labeled data: *input/output pairs*
+    2. automatically generate a program <br/>that computes an *output* for each *new input*
+    3. profit! {slide} // actually fast to apply usually
+
+The machine *learns* to *generalize* <br/> from a limited number of examples, <br/>like humans do. {center slide bordered}
+
+
+## Different Types of Tasks
+- Supervised learning: some labels are known {slide}
+  - classification: find the label of an example
+  - regression: find the target value
+- Unsupervised learning: no labels {slide}
+  - clustering: group things together
+  - pattern mining: find recurrent events
+  - anomaly detection: find “outliers”
+
+
+## The Principle of “Overfitting”
+@svg: media/overfitting.svg 800px 500px
+
+- @anim: #points | #linear | #piecewise | #ok
+- {notes}
+  - example: surface of a flat vs price
+  - in the end, there is no best solution
+
+## A Lot of Different Methods
+- Also called “models” {slide}
+  - linear regression, logistic regression, SVM, kernel SVM, neural networks, k-means clustering, collaborative filtering, bayesian networks, expectation maximization, belief propagation, multiple kernel learning, metric learning, transfer learning, decision trees, gaussian processes, random forests, boosting, ... {pack}
+- For different contexts {slide}
+  - different tasks // supervised or not, ...
+  - different nature of data // image, ...
+  - different suppositions on the data // clean or not, etc
+  - different amount of data
+
+
+## Different Ways to Start
+- Use a product that uses ML {slide}
+  - e.g. adwords, ibm bluemix, …
+- Use a prediction API {slide}
+  - send your data to the service // need data: input+label
+  - get API to process new inputs
+  - e.g., google pred. API, prediction.io, ... // .io is open source
+- Dive into machine learning… {slide}
+
+## Into Machine Learning
+- Using libraries
+  - libraries exist in most languages
+  - most models already implemented
+  - test different methods with different parameters
+- Learning machine learning {slide}
+  - many online courses // Andrew NG, coursera
+  - get deeper understanding // distinguish real limitations from tool limitations, ...
+
+
+<!-- Important for companies -->
+# Does Machine Learning Actually Matter?
+
+## Example: The Netflix Challenge
+<img class="c12 floatleft" src="media/logo-netflix.png"/>
+- {notes}
+  - 1M$ price to improve the recom accuracy by 10%
+  - predict rating
+  - start: October 2, 2006
+  - price: September 21, 2009
+
+## FAIR {image-full top-right darkened /black-bg /no-status anim-continue}
+<div class="img blurred" style="background-image: url('media/zuckerberg.jpg')" ></div>
+- @anim: %+class:fromblurred:div.img + %-class:blurred:div.img
+- {notes}
+  - not only facebook
+  - ICML: google, facebook, baidu, alibaba, yahoo, ms research, disney, netflix, amazon, PAS: apple
+
+## Example: Facebook AI Research // December 2013
+- Director: Yann LeCun
+<img class="c2 floatright" src="media/french-tech.png" />
+<img class="c2 floatright" src="media/french-tech.png" style="transform: scale(-1,1)"/>
+- Scientific Leads
+  - Léon Bouttou
+  - Rob Fergus
+  - Florent Perronnin
+- @anim: .piechart
+- {notes}
+  - total 12/27, 1/1 director, 2/3 leads
+  - torch framework
+
+@svg: media/pie-chart.svg 800px 200px {piechart}
+
+
+
+<!-- data rules -->
+# Data, Data, Data
+
+# Data is <br/>Machine Learning's Fuel
+
+## data === power {image-full top-right darkened /black-bg /no-status}
+<div class="img" style="background-image: url('media/have-data.jpg')" data-attribution="https://www.flickr.com/photos/jannekestaaks/14389697382/sizes/h/" data-attribution-content="CC by jannekestaaks (Flickr)" data-scale=""></div>
+- {notes}
+  - if you have the data, you rule
+  - wearable devices (all tracking), online services, ...
+
+## Getting Data? {image-full top-right darkened /black-bg /no-status}
+<div class="img" style="background-image: url('media/source.jpg')" data-attribution="https://www.flickr.com/photos/francoisjouffroy/9420880137/sizes/h/" data-attribution-content="CC by francoisjouffroy (Flickr)" data-scale=""></div>
+- {notes}
+  - a good data source is key
+  - one of the main challenges
+
+## Getting Data?
+- Collect from your services/applications {slide}
+- Do it yourself {slide}
+- Pay some people you know {slide}
+- Use crowd-sourcing, <br/> e.g., Amazon Mechanical Turk (MTurk) {slide}
+- Find existing datasets (open data, etc) {slide}
+- Work for/with a “data rich” company {slide}
+- Create your “intermediation” business {slide}
+
+# What Can It Do <br/> For Me
+<!-- hot shot applications (maybe move later) -->
+# *Search* <br/> Google Search, Bing, etc
+# *Advertising* <br/> AdWords, etc // core business
+# *Recommendations* <br/> Netflix, Amazon, Youtube, app Stores, etc
+# *Text Translation*
+# *Optical Character Recognition* <br/> (postcodes, checks, book scans, etc)
+# *Visual Recognition* (objects, plants, animals, etc)
+# *Face Detection* <br/> *Smile Detection*<br/> (embedded in Cameras)
+# *Face Identification* <br/> (Picasa, Facebook, etc)
+# *Kinect Controller*
+# *Self Driving Cars*
+# *Voice Recognition* <br/> and Synthesis<br/> (GoogleNow, Siri, Cortana)
+# *Sound Recognition* <br/> (birds, underwater sounds, safety, etc)
+# *Fraud Detection* <br/> (Banking, Websites, etc)
+# *Automated Trading* <br/> …
+# *Customer/Person Profiling* <br/> BlueMix Watson, etc
+# *Adaptive Websites* <br/> (automated A/B testing)
+# The *“Big Data”* Hype
+
+## and much more... {image-full top-left darkened /black-bg /no-status}
+<div class="img" style="background-image: url('media/infinity-train.jpg')" data-attribution="https://www.flickr.com/photos/efilpera/4320502144/sizes/o/" data-attribution-content="CC by efilpera (Flickr)" data-scale=""></div>
+
+
+
+# Where Will it Stop?
+
+## Singularity? {image-full bottom-left darkened /black-bg /no-status}
+<div class="img" style="background-image: url('media/borg-terminator.jpg')" data-attribution="https://www.flickr.com/photos/jdhancock/4446975104/sizes/l" data-attribution-content="CC by JD Hancock (Flickr)" data-scale=""></div>
+- {notes}
+  - explain, ten years ago, ..., today (chess, go, atari, ...)
+  - can on draw the graph on the board
+  - don't know, but scenarios
+      - mass automation, jobs?
+      - fight (term), cow (matrix), zoo
+      - augmented human
+      - 5-100 year, media 2040
+
+<!--
+# wip
+- intro/quizz, how to program a complex thing
+- teaser: what is it, where is it used, everywhere (google, reco (prod, movies, music, friends), spam, sport analytics, anomaly detect, oil exploration, netflix price 1M
+- basic principle: clustering vs predective
+- what can it do for us
+- the power of data
+- risk of singularity?
+
+# random
+- in practice
+  - custom data analysis
+  - dedicated tools that use stuff
+  - predictive apis
+- blinky
+
+# Resources
+- structure pas mal: http://www.slideshare.net/CodeForFrankfurt/brief-introduction-to-machine-learning?qid=c7f60b34-8b33-4319-b049-32c16d132651&v=qf1&b=&from_search=3
+- pas mal aussi: http://www.slideshare.net/louisdorard/demystifying-machine-learning?qid=30f25688-267f-44ed-a0d4-c89cbc239b38&v=default&b=&from_search=3
+    - mais aucun ne passe le gap de comment programmer un truc from scratch -> et besoin d'apprendre
+- amazing illustrations etc http://www.slideshare.net/DhianaDevaRocha/qcon-rio-machine-learning-for-everyone?qid=30f25688-267f-44ed-a0d4-c89cbc239b38&v=qf1&b=&from_search=15
+
+-->
+
+## Thanks! Questions? {deck-status-fake-end /minion}
+twitter: <a href="http://twitter.com/remiemonet/">`@remiemonet`</a>
+
+web/email: <a href="http://home.heeere.com">`http://home.heeere.com`</a>
+
+Recommended Links: {links}
+- [comprehensive introduction to ML models](http://www.slideshare.net/DhianaDevaRocha/qcon-rio-machine-learning-for-everyone)
+- [scikit learn (python)](http://scikit-learn.org/stable/)
+- ...
+
+
+# Attribution
+
+# @chunk: attrib.md
+
+
+            </section>
+
+            <!-- footer and other decorations -->
+            <p class="deck-status deck-progress-10">
+                <span class="deck-status-current"></span> / <span class="deck-status-total"></span> − <span class="var-author">automatically replaced by the author</span> − <span class="var-title">automatically replaced by the title</span>
+            </p>
+
+
+        </div>
+    </body>
+
+</html>
